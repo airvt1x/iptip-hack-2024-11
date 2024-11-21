@@ -26,7 +26,7 @@ export const createstage = async (req,res) => {
         .populate({
             path: 'manager', 
             select: '-passwordHash' 
-        });;
+        });
         res.json(order);
     } catch (err) {
         console.log(err);
@@ -125,7 +125,7 @@ export const remove = async(req,res)=>{
 export const update = async (req, res) => {
     try {
         const OrderId = req.params.id;
-        await OrderModel.updateOne({
+        await OrderModel.findOneAndUpdateupdateOne({
             _id: OrderId,
         },
     {
@@ -138,10 +138,11 @@ export const update = async (req, res) => {
         stages: req.body.stages,
         risks: req.body.risks,
         manager: req.body.manager,
+    },{returnDocument: 'after'}).populate('stages')
+    .populate({
+        path: 'manager', 
+        select: '-passwordHash' 
     });
-    OrderModel.findOne({
-        _id: OrderId
-    }).then(Order => {res.json(Order)});
     } catch (err) {
         res.status(500).json({
             message: 'Не удалось изменить ордер',
