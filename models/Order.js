@@ -7,7 +7,7 @@ const OrderSchema = new mongoose.Schema({
   },
   manager:{
     type: Schema.Types.ObjectId, ref: 'User',
-    default: null
+    default: ''
   },
   content:{
     type: String,
