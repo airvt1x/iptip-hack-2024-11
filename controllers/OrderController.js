@@ -67,7 +67,10 @@ export const create = async (req, res) => {
                     from: 'Бот 1с хакатона <onboarding@resend.dev>',
                     to: "airat3552@gmail.com",
                     subject: "Новый ордер",
-                    html: `Новый ордер <strong>"${savedOrder.title}"</strong> создан.`,
+                    html: `<h1>Здравствуйте!</h1>
+            <p>Был создан новый ордер: <strong>«${savedOrder.title}»</strong>.</p>
+            <p>Все подробности Вы найдете в системе.</p>
+            <div class="signature">Спасибо за Ваше внимание и сотрудничество!<br><em>Команда FLUXO</em></div>`,
                 });
     
             } catch (error) {
