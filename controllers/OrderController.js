@@ -76,7 +76,6 @@ export const getAll = async(req,res)=>{
     try {
         const Orders = await OrderModel
         .find()
-        .populate('stages');
         res.json(Orders);
     } catch (err) {
         console.log(err);
@@ -91,7 +90,11 @@ export const getById = async(req,res)=>{
         const OrderId = req.params.id;
         OrderModel.findOne({
             _id: OrderId
-        }).then(Order => {res.json(Order)});
+        }.populate('stages')
+        .populate({
+            path: 'manager', 
+            select: '-passwordHash' 
+        }).then(Order => {res.json(Order)}));
     } catch (err) {
         console.log(err);
         res.stasts(500).json({

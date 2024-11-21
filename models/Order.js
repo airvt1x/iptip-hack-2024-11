@@ -5,6 +5,11 @@ const OrderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  manager:{
+    type: Schema.Types.ObjectId, ref: 'User',
+    required: true,
+    default: undefined
+  },
   content:{
     type: String,
     required: true,
