@@ -125,28 +125,40 @@ export const remove = async(req,res)=>{
 export const update = async (req, res) => {
     try {
         const OrderId = req.params.id;
-        await OrderModel.findOneAndUpdate({
-            _id: OrderId,
-        },
-    {
-        title: req.body.title,
-        content: req.body.content,
-        dateEnd: req.body.dateEnd,
-        price: req.body.price,
-        status: req.body.status,
-        organization: req.body.organization,
-        stages: req.body.stages,
-        risks: req.body.risks,
-        manager: req.body.manager,
-    },{returnDocument: 'after'}).populate('stages')
-    .populate({
-        path: 'manager', 
-        select: '-passwordHash' 
-    });
+        const updatedOrder = await OrderModel.findOneAndUpdate(
+            { _id: OrderId },
+            {
+                title: req.body.title,
+                content: req.body.content,
+                dateEnd: req.body.dateEnd,
+                price: req.body.price,
+                status: req.body.status,
+                organization: req.body.organization,
+                stages: req.body.stages,
+                risks: req.body.risks,
+                manager: req.body.manager,
+            },
+            { new: true } // This option returns the updated document
+        )
+        .populate('stages')
+        .populate({
+            path: 'manager',
+            select: '-passwordHash'
+        });
+
+        if (!updatedOrder) {
+            return res.status(404).json({
+                message: 'Ордер не найден'
+            });
+        }
+
+        res.json(updatedOrder);
+
     } catch (err) {
+        console.log(err);
         res.status(500).json({
             message: 'Не удалось изменить ордер',
             error: err
-        })
+        });
     }
 }
