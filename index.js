@@ -2,7 +2,8 @@ import dotenv from 'dotenv'
 import express from 'express'
 import mongoose from 'mongoose'
 
-import { UserController } from './controllers/index.js'
+
+import { UserController, OrderController } from './controllers/index.js'
 import { checkAuth, handleValidationErrors } from './utils/index.js'
 
 mongoose.set('strictQuery', false)
@@ -28,6 +29,16 @@ app.listen(1234, (err) => {
 app.get('/', (req, res) => {
   res.send('Гугуца батрачит')
 })
+
+
+
+
 app.post('/auth/login', handleValidationErrors, UserController.login)
 app.post('/auth/register', handleValidationErrors, UserController.register)
 app.get('/auth/me', checkAuth, UserController.getMe)
+
+app.get('/orders', checkAuth, OrderController.getAll);
+app.get('/orders/:id', checkAuth, OrderController.getById);
+app.post('/orders', checkAuth, handleValidationErrors, OrderController.create);
+app.patch('/orders/:id', checkAuth, handleValidationErrors, OrderController.update);
+app.delete('/orders/:id', checkAuth, OrderController.remove);
