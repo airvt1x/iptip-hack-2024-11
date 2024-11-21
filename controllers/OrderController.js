@@ -21,7 +21,12 @@ export const createstage = async (req,res) => {
         }
         const newStage = new StageModel(stage);
         const savedStage = await newStage.save();
-        const order = await OrderModel.findOneAndUpdate( {_id: OrderId}, { $push: { stages: savedStage._id } },{returnDocument: 'after'});
+        const order = await OrderModel.findOneAndUpdate( {_id: OrderId}, { $push: { stages: savedStage._id } },{returnDocument: 'after'})
+        .populate('stages')
+        .populate({
+            path: 'manager', 
+            select: '-passwordHash' 
+        });;
         res.json(order);
     } catch (err) {
         console.log(err);
