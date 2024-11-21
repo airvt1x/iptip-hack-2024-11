@@ -38,7 +38,7 @@ app.post('/auth/register', handleValidationErrors, UserController.register)
 app.get('/auth/me', checkAuth, UserController.getMe)
 
 app.get('/orders', OrderController.getAll);
-app.get('/orders/:id', checkAuth, OrderController.getById);
+app.get('/orders/:id', OrderController.getById);
 app.post('/orders', checkAuth, handleValidationErrors, OrderController.create);
 app.patch('/orders/:id', checkAuth, handleValidationErrors, OrderController.update);
 app.delete('/orders/:id', checkAuth, OrderController.remove);
