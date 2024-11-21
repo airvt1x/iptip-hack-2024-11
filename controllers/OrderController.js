@@ -139,7 +139,8 @@ export const update = async (req, res) => {
     }).then(Order => {res.json(Order)});
     } catch (err) {
         res.status(500).json({
-            message: 'Не удалось изменить ордер'
+            message: 'Не удалось изменить ордер',
+            error: err
         })
     }
 }
