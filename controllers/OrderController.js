@@ -125,7 +125,7 @@ export const remove = async(req,res)=>{
 export const update = async (req, res) => {
     try {
         const OrderId = req.params.id;
-        await OrderModel.findOneAndUpdateupdateOne({
+        await OrderModel.findOneAndUpdate({
             _id: OrderId,
         },
     {
