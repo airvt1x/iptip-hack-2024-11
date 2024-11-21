@@ -19,12 +19,6 @@ const UserSchema = new mongoose.Schema({
   },
   organization: {
     type: String,
-    validate: {
-      validator: (value) => {
-        return this.role === 'corporation';
-      },
-      message: props => `${props.value} is not allowed for ${props.path}. Role must be 'corporation'.`
-    }
   },
 }, {
   timestamps: true,
