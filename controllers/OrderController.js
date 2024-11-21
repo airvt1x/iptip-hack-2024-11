@@ -74,14 +74,7 @@ export const create = async (req, res) => {
 
 export const getAll = async(req,res)=>{
     try {
-        const limit = req.query.limit;
-        const skip = req.query.skip;
-
         const Orders = await OrderModel
-        .find()
-        .skip(skip)
-        .limit(limit)
-        .exec();
         res.json(Orders);
     } catch (err) {
         console.log(err);
