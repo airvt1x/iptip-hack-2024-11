@@ -1,5 +1,6 @@
 import OrderModel from "../models/Order.js"
 import UserModel from "../models/User.js"
+import StageModel from "../models/Stage.js"
 import dotenv from 'dotenv'
 import { Resend } from 'resend';
 
@@ -8,45 +9,27 @@ dotenv.config()
 const resend = new Resend(process.env.RESENDAPIKEY);
 
 
-export const getAll = async(req,res)=>{
+export const createstage = async (req,res) => {
     try {
-        const Orders = await OrderModel.find();
-        res.json(Orders);
+        const OrderId = req.params.id;
+        const stage = {
+            title: req.body.title,
+            content: req.body.content,
+            date: req.body.dateStart,
+            dateEnd: req.body.dateEnd,
+            price: req.body.price,
+        }
+        const newStage = new StageModel(stage);
+        const savedStage = await newStage.save();
+        const order = await OrderModel.findOneAndUpdate( {_id: OrderId}, { $push: { stages: savedStage._id } },);
+        res.json(order);
     } catch (err) {
         console.log(err);
         res.status(500).json({
             message: 'Не удалось подгрузить ордеры'
         })
-    }
+    } 
 }
-
-export const getById = async(req,res)=>{
-    try {
-        const OrderId = req.params.id;
-        OrderModel.findOne({
-            _id: OrderId
-        }).then(Order => {res.json(Order)});
-    } catch (err) {
-        console.log(err);
-        res.stasts(500).json({
-            message: 'Не удалось подгрузить ордер'
-        })
-    }
-}
-
-export const remove = async(req,res)=>{
-    try {
-        const OrderId = req.params.id;
-        await OrderModel.findByIdAndDelete(OrderId);
-        res.json({ message: 'Ордер удален' });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({
-            message: 'Не удалось удалить ордер'
-        })
-    }
-}
-
 
 export const create = async (req, res) => {
     try {
@@ -85,6 +68,45 @@ export const create = async (req, res) => {
         console.log(err);
         res.status(500).json({
             message: 'Не удалось создать ордер'
+        })
+    }
+}
+
+export const getAll = async(req,res)=>{
+    try {
+        const Orders = await OrderModel.find();
+        res.json(Orders);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось подгрузить ордеры'
+        })
+    }
+}
+
+export const getById = async(req,res)=>{
+    try {
+        const OrderId = req.params.id;
+        OrderModel.findOne({
+            _id: OrderId
+        }).then(Order => {res.json(Order)});
+    } catch (err) {
+        console.log(err);
+        res.stasts(500).json({
+            message: 'Не удалось подгрузить ордер'
+        })
+    }
+}
+
+export const remove = async(req,res)=>{
+    try {
+        const OrderId = req.params.id;
+        await OrderModel.findByIdAndDelete(OrderId);
+        res.json({ message: 'Ордер удален' });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось удалить ордер'
         })
     }
 }

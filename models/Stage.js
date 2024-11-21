@@ -24,7 +24,7 @@ const StageSchema = new mongoose.Schema({
   },
   organization:{
     type: String,
-    required: true,
+    default: '',
   },
   stages:{
     type: [{type: Schema.Types.ObjectId}],

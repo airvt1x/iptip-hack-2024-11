@@ -42,3 +42,5 @@ app.get('/orders/:id', checkAuth, OrderController.getById);
 app.post('/orders', checkAuth, handleValidationErrors, OrderController.create);
 app.patch('/orders/:id', checkAuth, handleValidationErrors, OrderController.update);
 app.delete('/orders/:id', checkAuth, OrderController.remove);
+
+app.put('/stages/:id', checkAuth, handleValidationErrors, OrderController.createstage);
