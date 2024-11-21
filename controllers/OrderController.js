@@ -76,6 +76,7 @@ export const getAll = async(req,res)=>{
     try {
         const Orders = await OrderModel
         .find()
+        .populate('stages');
         res.json(Orders);
     } catch (err) {
         console.log(err);

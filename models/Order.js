@@ -33,7 +33,7 @@ const OrderSchema = new mongoose.Schema({
     default: '',
   },
   stages:{
-    type: [{type: Schema.Types.ObjectId}],
+    type: [{type: Schema.Types.ObjectId, ref: 'Stage'}],
     required: true,
     default: [],
   },
