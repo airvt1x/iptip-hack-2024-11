@@ -75,6 +75,7 @@ export const create = async (req, res) => {
 export const getAll = async(req,res)=>{
     try {
         const Orders = await OrderModel
+        .find()
         res.json(Orders);
     } catch (err) {
         console.log(err);
