@@ -88,16 +88,17 @@ export const getAll = async(req,res)=>{
 export const getById = async(req,res)=>{
     try {
         const OrderId = req.params.id;
-        OrderModel.findOne({
+        const order = await OrderModel.findOne({
             _id: OrderId
-        }.populate('stages')
+        }).populate('stages')
         .populate({
             path: 'manager', 
             select: '-passwordHash' 
-        }).then(Order => {res.json(Order)}));
+        });
+        res.json(order);
     } catch (err) {
         console.log(err);
-        res.stasts(500).json({
+        res.status(500).json({
             message: 'Не удалось подгрузить ордер'
         })
     }
@@ -131,6 +132,7 @@ export const update = async (req, res) => {
         organization: req.body.organization,
         stages: req.body.stages,
         risks: req.body.risks,
+        manager: req.body.manager,
     });
     OrderModel.findOne({
         _id: OrderId
