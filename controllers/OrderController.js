@@ -10,10 +10,11 @@ const resend = new Resend(process.env.RESENDAPIKEY);
 
 export const getAll = async(req,res)=>{
     try {
-        const Orders = await OrderModel.findAll();
+        const Orders = await OrderModel.find();
+        res.json(Orders);
     } catch (err) {
         console.log(err);
-        res.stasts(500).json({
+        res.status(500).json({
             message: 'Не удалось подгрузить ордеры'
         })
     }
@@ -64,7 +65,7 @@ export const create = async (req, res) => {
             const emails = managers.map((manager) => manager.email);
             try {
                 await resend.emails.send({
-                    from: 'Бот 1с хакатона <onboarding@resend.dev>',
+                    from: 'Fluxo notifier<onboarding@resend.dev>',
                     to: "airat3552@gmail.com",
                     subject: "Новый ордер",
                     html: `<h1>Здравствуйте!</h1>
