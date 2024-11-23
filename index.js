@@ -3,8 +3,9 @@ import express from 'express'
 import mongoose from 'mongoose'
 
 
+
 import { UserController, OrderController } from './controllers/index.js'
-import { checkAuth, handleValidationErrors } from './utils/index.js'
+import { checkAuth, handleValidationErrors, gpt } from './utils/index.js'
 
 mongoose.set('strictQuery', false)
 dotenv.config()
@@ -44,3 +45,6 @@ app.patch('/orders/:id', checkAuth, handleValidationErrors, OrderController.upda
 app.delete('/orders/:id', checkAuth, OrderController.remove);
 
 app.put('/stages/:id', checkAuth, handleValidationErrors, OrderController.createstage);
+
+app.post('/risks/:id', OrderController.podborka)
+

@@ -22,18 +22,14 @@ const StageSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  organization:{
-    type: String,
-    default: '',
-  },
   stages:{
     type: [{type: Schema.Types.ObjectId, ref: 'Stage'}],
     required: true,
     default: [],
   },
   risks:{
-    type: Array,
-    default: [],
+    type: String,
+    default: '',
   }
 
 },)

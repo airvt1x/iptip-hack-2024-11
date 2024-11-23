@@ -3,13 +3,28 @@ import UserModel from "../models/User.js"
 import StageModel from "../models/Stage.js"
 import dotenv from 'dotenv'
 import { Resend } from 'resend';
-import e from "express";
+import {gpt} from '../utils/index.js'
 
 
 dotenv.config()
 const resend = new Resend(process.env.RESENDAPIKEY);
 
-
+export const podborka = async (req, res) => {
+    try {
+        const orderId = req.params.id
+        const text = await OrderModel.findById(orderId)
+        const token = await gpt.getIamToken(process.env.YA_OAUTH_TOKEN)
+        const response = await gpt.getTextCompletion(token.iamToken, text.content);
+        res.status(200).json(response.result.alternatives[0].message.text);
+        await OrderModel.updateOne({_id: orderId}, {risks: response.result.alternatives[0].message.text});
+    } catch (err) {
+        res.status(500).json({
+            message: 'Что-то пошло не так',
+        });
+        console.log(err);
+    }
+  }
+  
 export const createstage = async (req,res) => {
     try {
         const OrderId = req.params.id;
@@ -64,27 +79,15 @@ export const create = async (req, res) => {
         
         const newOrder = new OrderModel(orderData);
         const savedOrder = await newOrder.save();
-        const managers = await UserModel.find({ role: 'manager' });
-
-        if (managers.length > 0) {
-            const emails = managers.map((manager) => manager.email);
-            try {
-                await resend.emails.send({
-                    from: 'Fluxo notifier<onboarding@resend.dev>',
-                    to: "airat3552@gmail.com",
-                    subject: "Новый ордер",
-                    html: `<h1>Здравствуйте!</h1>
-            <p>Был создан новый ордер: <strong>«${savedOrder.title}»</strong>.</p>
-            <p>Все подробности Вы найдете в системе.</p>
-            <div class="signature">Спасибо за Ваше внимание и сотрудничество!<br><em>Команда FLUXO</em></div>`,
-                });
-    
-            } catch (error) {
-                console.error(`Ошибка отправки писем менеджерам:`, error);
-            }
-        }
-    
-
+        await resend.emails.send({
+            from: 'Fluxo notifier<onboarding@resend.dev>',
+            to: "airat3552@gmail.com",
+            subject: "Новый ордер",
+            html: `<h1>Здравствуйте!</h1>
+    <p>Был создан новый ордер: <strong>«${savedOrder.title}»</strong>.</p>
+    <p>Все подробности Вы найдете в системе.</p>
+    <div class="signature">Спасибо за Ваше внимание и сотрудничество!<br><em>Команда FLUXO</em></div>`,
+        });
         res.json(savedOrder);
     } catch (err) {
         console.log(err);
