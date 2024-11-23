@@ -3,6 +3,7 @@ import UserModel from "../models/User.js"
 import StageModel from "../models/Stage.js"
 import dotenv from 'dotenv'
 import { Resend } from 'resend';
+import e from "express";
 
 
 dotenv.config()
@@ -21,13 +22,29 @@ export const createstage = async (req,res) => {
         }
         const newStage = new StageModel(stage);
         const savedStage = await newStage.save();
-        const order = await OrderModel.findOneAndUpdate( {_id: OrderId}, { $push: { stages: savedStage._id } },{returnDocument: 'after'})
-        .populate('stages')
-        .populate({
-            path: 'manager', 
-            select: '-passwordHash' 
-        });
-        res.json(order);
+        const existingOrder = await OrderModel.findById(OrderId);
+        if (!existingOrder) {
+           const existingStage = await StageModel.findById(savedStage._id);
+            if (!existingStage) {
+                return res.status(404).json({
+                    message: 'Ордер или стадия не найдены'
+                });
+            }
+            else {
+                const stage = await StageModel.findOneAndUpdate({_id:OrderId}, { $push: { stages: savedStage._id } },{returnDocument: 'after'})
+                .populate('stages')
+                res.json(stage);
+            };
+        }
+        else {
+            const order = await OrderModel.findOneAndUpdate( {_id: OrderId}, { $push: { stages: savedStage._id } },{returnDocument: 'after'})
+            .populate('stages')
+            .populate({
+                path: 'manager', 
+                select: '-passwordHash' 
+            });
+            res.json(order);
+        }
     } catch (err) {
         console.log(err);
         res.status(500).json({
@@ -90,24 +107,55 @@ export const getAll = async(req,res)=>{
     }
 }
 
-export const getById = async(req,res)=>{
+async function populateStages(stage) {
+    if (!stage.stages || stage.stages.length === 0) return stage;
+    
+    // Пополняем текущий уровень стадий
+    await StageModel.populate(stage, {
+        path: 'stages',
+        model: 'Stage',
+        options: { lean: true }, // Используем lean для повышения производительности
+        populate: {
+            path: 'stages',
+            model: 'Stage',
+            options: { lean: true },
+            populate: {
+                path: 'stages',
+                model: 'Stage',
+                options: { lean: true }
+            }
+        }
+    });
+
+    // Рекурсивный вызов для каждой вложенной стадии
+    for (let i = 0; i < stage.stages.length; i++) {
+        await populateStages(stage.stages[i]);
+    }
+
+    return stage;
+}
+
+// Основная функция обработки запроса
+export const getById = async (req, res) => {
     try {
         const OrderId = req.params.id;
-        const order = await OrderModel.findOne({
-            _id: OrderId
-        }).populate('stages')
-        .populate({
-            path: 'manager', 
-            select: '-passwordHash' 
-        });
+        
+        // Находим заказ и пополняем менеджер и стадии
+        const order = await OrderModel.findOne({ _id: OrderId })
+            .populate({
+                path: 'manager',
+                select: '-passwordHash'
+            });
+
+        // Рекурсивная обработка всех уровней стадий
+        await populateStages(order);
+
         res.json(order);
     } catch (err) {
-        console.log(err);
-        res.status(500).json({
-            message: 'Не удалось подгрузить ордер'
-        })
+        console.error(err);
+        res.status(500).json({ message: 'Не удалось подгрузить ордер' });
     }
-}
+};
 
 export const remove = async(req,res)=>{
     try {
