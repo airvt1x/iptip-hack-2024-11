@@ -59,7 +59,7 @@ app.get('/currentTime', (req, res) => {
 
   const intervalId = setInterval(() => {
     res.write(`data: ${new Date().toLocaleString()}\n\n`);
-  }, 1000);
+  }, 3000);
 
   res.on("close", () => {
     clearInterval(intervalId);
