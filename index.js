@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 import express from 'express'
 import mongoose from 'mongoose'
-import cors from 'cors'
+// import cors from 'cors'
 
 
 
@@ -19,7 +19,7 @@ mongoose
 
 const app = express()
 app.use(express.json())
-app.use(cors())
+// app.use(cors())
 
 app.listen(1234, (err) => {
   if (err) {
@@ -51,18 +51,18 @@ app.put('/stages/:id', checkAuth, handleValidationErrors, OrderController.create
 
 app.post('/risks/:id', checkAuth, OrderController.podborka)
 
-app.get('/currentTime', (req, res) => {
-  res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection", "keep-alive");
-  res.flushHeaders();
+// app.get('/currentTime', (req, res) => {
+//   res.setHeader("Content-Type", "text/event-stream");
+//   res.setHeader("Cache-Control", "no-cache");
+//   res.setHeader("Connection", "keep-alive");
+//   res.flushHeaders();
 
-  const intervalId = setInterval(() => {
-    res.write(`data: ${new Date().toLocaleString()}\n\n`);
-  }, 1000);
+//   const intervalId = setInterval(() => {
+//     res.write(`data: ${new Date().toLocaleString()}\n\n`);
+//   }, 1000);
 
-  res.on("close", () => {
-    clearInterval(intervalId);
-    res.end();
-})
-});
+//   res.on("close", () => {
+//     clearInterval(intervalId);
+//     res.end();
+// })
+// });
