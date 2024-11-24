@@ -49,11 +49,3 @@ app.put('/stages/:id', checkAuth, handleValidationErrors, OrderController.create
 
 app.post('/risks/:id', checkAuth, OrderController.podborka)
 
-//SSE
-app.get("/currentTime", (req, res) => {
-  res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection", "keep-alive");
-  res.flushHeaders();
-  
-})
