@@ -1,5 +1,4 @@
 import OrderModel from "../models/Order.js"
-import UserModel from "../models/User.js"
 import StageModel from "../models/Stage.js"
 import dotenv from 'dotenv'
 import { Resend } from 'resend';

@@ -46,5 +46,5 @@ app.delete('/orders/:id', checkAuth, OrderController.remove);
 
 app.put('/stages/:id', checkAuth, handleValidationErrors, OrderController.createstage);
 
-app.post('/risks/:id', OrderController.podborka)
+app.post('/risks/:id', checkAuth, OrderController.podborka)
 
