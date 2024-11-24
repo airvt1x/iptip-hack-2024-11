@@ -42,9 +42,18 @@ app.get('/orders', checkAuth, OrderController.getAll);
 app.get('/orders/:id', checkAuth, OrderController.getById);
 app.post('/orders', checkAuth, handleValidationErrors, OrderController.create);
 app.patch('/orders/:id', checkAuth, handleValidationErrors, OrderController.update);
-app.delete('/orders/:id', checkAuth, OrderController.remove);
+
+app.delete('/stages/:id', checkAuth, OrderController.remove);
 
 app.put('/stages/:id', checkAuth, handleValidationErrors, OrderController.createstage);
 
 app.post('/risks/:id', checkAuth, OrderController.podborka)
 
+//SSE
+app.get("/currentTime", (req, res) => {
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.flushHeaders();
+  
+})

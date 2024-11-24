@@ -1,5 +1,6 @@
 import OrderModel from "../models/Order.js"
 import StageModel from "../models/Stage.js"
+import UserModel from "../models/User.js"
 import dotenv from 'dotenv'
 import { Resend } from 'resend';
 import {gpt} from '../utils/index.js'
@@ -27,12 +28,14 @@ export const podborka = async (req, res) => {
 export const createstage = async (req,res) => {
     try {
         const OrderId = req.params.id;
+        const user_organization = await UserModel.findById(req.userId)
         const stage = {
             title: req.body.title,
             content: req.body.content,
             date: req.body.dateStart,
             dateEnd: req.body.dateEnd,
             price: req.body.price,
+            organization: user_organization.organization
         }
         const newStage = new StageModel(stage);
         const savedStage = await newStage.save();
@@ -116,7 +119,7 @@ async function populateStages(stage) {
     await StageModel.populate(stage, {
         path: 'stages',
         model: 'Stage',
-        options: { lean: true }, // Используем lean для повышения производительности
+        options: { lean: true }, 
         populate: {
             path: 'stages',
             model: 'Stage',
@@ -129,7 +132,7 @@ async function populateStages(stage) {
         }
     });
 
-    // Рекурсивный вызов для каждой вложенной стадии
+   
     for (let i = 0; i < stage.stages.length; i++) {
         await populateStages(stage.stages[i]);
     }
@@ -137,19 +140,19 @@ async function populateStages(stage) {
     return stage;
 }
 
-// Основная функция обработки запроса
+
 export const getById = async (req, res) => {
     try {
         const OrderId = req.params.id;
         
-        // Находим заказ и пополняем менеджер и стадии
+        
         const order = await OrderModel.findOne({ _id: OrderId })
             .populate({
                 path: 'manager',
                 select: '-passwordHash'
             });
 
-        // Рекурсивная обработка всех уровней стадий
+
         await populateStages(order);
 
         res.json(order);
@@ -159,18 +162,26 @@ export const getById = async (req, res) => {
     }
 };
 
-export const remove = async(req,res)=>{
+export const remove = async (req, res) => {
     try {
-        const OrderId = req.params.id;
-        await OrderModel.findByIdAndDelete(OrderId);
-        res.json({ message: 'Ордер удален' });
+        const StageId = req.params.id;
+        const stage = await StageModel.findById(StageId);
+        if (!stage) {
+            return res.status(404).json({ message: 'Стадия не найдена' });
+        }
+
+        await StageModel.deleteMany({ _id: { $in: stage.stages } });
+        await StageModel.findByIdAndDelete(StageId);
+
+        res.json({ message: 'Cвязанные стадии удалены' });
     } catch (err) {
         console.log(err);
         res.status(500).json({
-            message: 'Не удалось удалить ордер'
-        })
+            message: 'Не удалось удалить cтадию'
+        });
     }
 }
+
 
 export const update = async (req, res) => {
     try {
@@ -188,7 +199,7 @@ export const update = async (req, res) => {
                 risks: req.body.risks,
                 manager: req.body.manager,
             },
-            { new: true } // This option returns the updated document
+            { returnDocument: 'after' } 
         )
         .populate('stages')
         .populate({
@@ -212,3 +223,4 @@ export const update = async (req, res) => {
         });
     }
 }
+

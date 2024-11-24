@@ -30,6 +30,10 @@ const StageSchema = new mongoose.Schema({
   risks:{
     type: String,
     default: '',
+  },
+  organization: {
+    type: String,
+    default: '',
   }
 
 },)

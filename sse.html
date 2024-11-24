@@ -1,0 +1,22 @@
+<html>
+    <body>
+        <h1>SSE Test</h1>
+        <script>
+            (async () => {try {
+                const res = await fetch('http://localhost:1234/stream',{
+                    headers:{
+                        'Accept': 'text/event-stream'}
+                });
+                for (const reader = res.body.getReader();;){
+                    const {value} = await reader.read();
+                    const chunk = new TextDecoder().decode(value);
+                    console.log(chunk);
+                }
+            } catch (error) {
+                console.log(error)
+            }
+                
+            })
+        </script>
+    </body>
+</html>
