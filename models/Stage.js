@@ -28,7 +28,7 @@ const StageSchema = new mongoose.Schema({
     default: [],
   },
   risks:{
-    type: String,
+    type: Schema.Types.Mixed,
     default: '',
   },
   organization: {
