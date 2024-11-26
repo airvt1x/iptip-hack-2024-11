@@ -41,8 +41,8 @@ const OrderSchema = new mongoose.Schema({
     default: [],
   },
   risks:{
-    type: String || Array,
-    default: ' ',
+    type: Schema.Types.Mixed,
+    default: '',
   }
 
 },)
