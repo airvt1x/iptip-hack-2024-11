@@ -27,7 +27,7 @@ export const podborka = async (req, res) => {
   
 export const createstage = async (req,res) => {
     try {
-        const OrderId = req.params.id;
+        const OrderorstageId = req.params.id;
         const user_organization = await UserModel.findById(req.userId)
         const stage = {
             title: req.body.title,
@@ -39,7 +39,7 @@ export const createstage = async (req,res) => {
         }
         const newStage = new StageModel(stage);
         const savedStage = await newStage.save();
-        const existingOrder = await OrderModel.findById(OrderId);
+        const existingOrder = await OrderModel.findById(OrderorstageId);
         if (!existingOrder) {
            const existingStage = await StageModel.findById(savedStage._id);
             if (!existingStage) {
@@ -48,13 +48,13 @@ export const createstage = async (req,res) => {
                 });
             }
             else {
-                const stage = await StageModel.findOneAndUpdate({_id:OrderId}, { $push: { stages: savedStage._id } },{returnDocument: 'after'})
+                const stage = await StageModel.findOneAndUpdate({_id:OrderorstageId}, { $push: { stages: savedStage._id } },{returnDocument: 'after'})
                 .populate('stages')
                 res.json(stage);
             };
         }
         else {
-            const order = await OrderModel.findOneAndUpdate( {_id: OrderId}, { $push: { stages: savedStage._id } },{returnDocument: 'after'})
+            const order = await OrderModel.findOneAndUpdate( {_id: OrderorstageId}, { $push: { stages: savedStage._id } },{returnDocument: 'after'})
             .populate('stages')
             .populate({
                 path: 'manager', 
