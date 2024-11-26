@@ -99,40 +99,29 @@ export const create = async (req, res) => {
     }
 }
 
-export const getAll = async(req,res)=>{
+export const getAll = async (req, res) => {
     try {
-        const Orders = await OrderModel
-        .find()
-        res.json(Orders);
+        const orders = await OrderModel.find();
+        const populatedOrders = await Promise.all(orders.map(order => populateStages(order)));
+
+        res.json(populatedOrders);
     } catch (err) {
         console.log(err);
         res.status(500).json({
             message: 'Не удалось подгрузить ордеры'
-        })
+        });
     }
 }
 
+
 async function populateStages(stage) {
     if (!stage.stages || stage.stages.length === 0) return stage;
-    
-    // Пополняем текущий уровень стадий
     await StageModel.populate(stage, {
         path: 'stages',
         model: 'Stage',
-        options: { lean: true }, 
-        populate: {
-            path: 'stages',
-            model: 'Stage',
-            options: { lean: true },
-            populate: {
-                path: 'stages',
-                model: 'Stage',
-                options: { lean: true }
-            }
-        }
+        options: { lean: true }
     });
 
-   
     for (let i = 0; i < stage.stages.length; i++) {
         await populateStages(stage.stages[i]);
     }
