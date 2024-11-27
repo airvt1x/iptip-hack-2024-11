@@ -6,7 +6,7 @@ import mongoose from 'mongoose'
 
 
 import { UserController, OrderController } from './controllers/index.js'
-import { checkAuth, handleValidationErrors, gpt } from './utils/index.js'
+import { checkAuth, handleValidationErrors} from './utils/index.js'
 
 mongoose.set('strictQuery', false)
 dotenv.config()
