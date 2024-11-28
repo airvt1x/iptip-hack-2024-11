@@ -19,7 +19,7 @@ mongoose
 
 const app = express()
 app.use(express.json())
-const allowedOrigins = ['http://localhost:5173', 'http://iptip-hack-2024-client.vercel.app'];
+const allowedOrigins = ['http://localhost:5173', 'https://iptip-hack-2024-client.vercel.app'];
 
 app.use(cors({
   origin: (origin, callback) => {
