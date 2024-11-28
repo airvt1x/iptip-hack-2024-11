@@ -223,7 +223,9 @@ export const update = async (req, res) => {
                 message: 'Ордер не найден'
             });
         }
-
+        clients.forEach(client => {
+            client.write(`data: ${JSON.stringify(updatedOrder)}\n\n`);
+        });
         res.json(updatedOrder);
 
     } catch (err) {
@@ -234,4 +236,3 @@ export const update = async (req, res) => {
         });
     }
 }
-
