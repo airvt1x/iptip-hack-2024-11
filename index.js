@@ -51,18 +51,6 @@ app.put('/stages/:id', checkAuth, handleValidationErrors, OrderController.create
 
 app.post('/risks/:id', checkAuth, OrderController.podborka)
 
-// app.get('/currentTime', (req, res) => {
-//   res.setHeader("Content-Type", "text/event-stream");
-//   res.setHeader("Cache-Control", "no-cache");
-//   res.setHeader("Connection", "keep-alive");
-//   res.flushHeaders();
 
-//   const intervalId = setInterval(() => {
-//     res.write(`data: ${new Date().toLocaleString()}\n\n`);
-//   }, 1000);
 
-//   res.on("close", () => {
-//     clearInterval(intervalId);
-//     res.end();
-// })
-// });
+app.get('/sse', OrderController.sse);

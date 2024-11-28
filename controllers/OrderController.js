@@ -81,6 +81,12 @@ export const create = async (req, res) => {
         
         const newOrder = new OrderModel(orderData);
         const savedOrder = await newOrder.save();
+        
+        // Уведомляем всех подключенных клиентов о новом заказе
+        clients.forEach(client => {
+            client.write(`data: ${JSON.stringify(savedOrder)}\n\n`);
+        });
+
         await resend.emails.send({
             from: 'Fluxo notifier<onboarding@resend.dev>',
             to: "airat3552@gmail.com",
@@ -95,9 +101,25 @@ export const create = async (req, res) => {
         console.log(err);
         res.status(500).json({
             message: 'Не удалось создать ордер'
-        })
+        });
     }
 }
+
+
+let clients = [];
+
+export const sse = (req, res) => {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    clients.push(res);
+
+    req.on('close', () => {
+        clients = clients.filter(client => client !== res);
+    });
+};
+
 
 export const getAll = async (req, res) => {
     try {
