@@ -1,0 +1,4 @@
+sudo docker stop backend-container
+sudo docker rm backend-container
+sudo docker build --tag 1chack:1.0.0 .
+sudo docker run -p 8000:1234 --name backend-container 1chack:1.0.0
